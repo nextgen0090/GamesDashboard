@@ -1,0 +1,113 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Orbitron', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --color-lobby-bg: #0a0614;
+  --color-lobby-panel: rgba(18, 10, 32, 0.72);
+  --color-neon-pink: #ff2d95;
+  --color-neon-purple: #b026ff;
+  --color-neon-gold: #ffc947;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  background: var(--color-lobby-bg);
+  color: #f4f4f5;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+.ambient-gradient {
+  background:
+    radial-gradient(ellipse 85% 55% at 50% -15%, rgba(176, 38, 255, 0.26), transparent 58%),
+    radial-gradient(ellipse 65% 45% at 100% 45%, rgba(255, 45, 149, 0.14), transparent 52%),
+    radial-gradient(ellipse 55% 40% at 0% 75%, rgba(255, 201, 71, 0.09), transparent 48%);
+  animation: ambient-shift 14s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-shift {
+  0% {
+    filter: hue-rotate(0deg) brightness(1);
+    transform: scale(1);
+  }
+  100% {
+    filter: hue-rotate(8deg) brightness(1.06);
+    transform: scale(1.03);
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes border-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.card-glow-ring {
+  position: relative;
+}
+
+.card-glow-ring::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--card-glow) 70%, transparent),
+    transparent 45%,
+    color-mix(in srgb, var(--card-glow) 40%, transparent)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.26;
+  transition: opacity 0.4s ease, filter 0.4s ease;
+  pointer-events: none;
+}
+
+.group:hover.card-glow-ring::before {
+  opacity: 0.78;
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--card-glow) 35%, transparent));
+}
+
+.play-btn-shine {
+  background: linear-gradient(
+    105deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 58%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.55s ease;
+}
+
+.play-btn:hover .play-btn-shine {
+  transform: translateX(120%);
+}

@@ -1,3 +1,21 @@
+# Games Dashboard (React + Vite)
+
+## Cloudflare Workers deploy
+
+In **Workers Builds → Settings**, use:
+
+| Setting | Value |
+|--------|--------|
+| **Root directory** | `/` (repo root — where `package.json` is) |
+| **Build command** | `npm ci && npm run build` |
+| **Deploy command** | `npx wrangler deploy` |
+
+The Vite app outputs to `dist/`. `wrangler.toml` serves those files as a SPA.
+
+Local deploy: `npm run deploy` (build + wrangler).
+
+---
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.

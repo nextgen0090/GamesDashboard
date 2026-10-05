@@ -30,11 +30,23 @@ jobs:
           node-version: '20'
           cache: npm
 
+      - name: Require Cloudflare secrets
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ] || [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+            echo "::error::Add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in GitHub repo Settings → Secrets → Actions"
+            exit 1
+          fi
+
       - name: Install dependencies
         run: npm ci
 
       - name: Build
         run: npm run build
+
+      - name: Verify game list in bundle
+        run: |
+          grep -q "Wonder Voyage" dist/assets/*.js || (echo "::warning::Wonder Voyage not in bundle — check src/data/games.ts" && true)
+          ! grep -q "Golden Fortune" dist/assets/*.js || (echo "::error::Old game Golden Fortune still in bundle" && exit 1)
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
@@ -42,3 +54,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
+          wranglerVersion: '4'

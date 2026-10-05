@@ -34,6 +34,11 @@ export function GameDashboard() {
             <GameCard key={game.id} game={game} index={index} onPlay={setActiveGame} />
           ))}
         </motion.section>
+
+        <p className="mt-6 text-center text-[10px] text-zinc-600" aria-hidden>
+          {games.length} game{games.length === 1 ? '' : 's'} · config: src/data/games.ts · built{' '}
+          {__APP_BUILD_TIME__.slice(0, 19).replace('T', ' ')} UTC
+        </p>
       </motion.main>
 
       <GamePlayerModal game={activeGame} onClose={() => setActiveGame(null)} />

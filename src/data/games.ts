@@ -14,7 +14,7 @@ export const games: Game[] = [
         gradientFrom: '#ff006e',
         gradientTo: '#8338ec',
         glow: '#ff006e',
-        category: 'Slots',
+        category: 'Puzzle',
     },
     {
         id: 'city-cargo',
@@ -25,7 +25,7 @@ export const games: Game[] = [
         gradientFrom: '#ff006e',
         gradientTo: '#8338ec',
         glow: '#ff006e',
-        category: 'Slots',
+        category: 'Puzzle',
     },
     {
         id: 'neon-slots',

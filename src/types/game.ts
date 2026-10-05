@@ -8,9 +8,10 @@ export interface Game {
   gradientTo: string
   glow: string
   category: string
-  /** Unity WebGL default canvas size (match Player → WebGL template / build settings) */
-  resolutionWidth: number
-  resolutionHeight: number
-  /** Used only when width/height omitted; prefer exact resolution when known */
+  /** Optional: Unity canvas size for the play modal (defaults to 1280×720) */
+  resolutionWidth?: number
+  resolutionHeight?: number
   orientation?: 'landscape' | 'portrait'
+  viewportPaddingTop?: number
+  viewportPaddingBottom?: number
 }

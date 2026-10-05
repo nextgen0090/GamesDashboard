@@ -4,10 +4,10 @@ import { computeModalSize } from '../utils/gameViewport'
 
 export function useModalGameLayout(game: Game | null) {
   const [layout, setLayout] = useState({
-    width: 960,
-    height: 592,
-    gameWidth: 960,
-    gameHeight: 540,
+    width: 1280,
+    height: 772,
+    gameWidth: 1280,
+    gameHeight: 720,
   })
 
   useEffect(() => {

@@ -103,7 +103,10 @@ export function GamePlayerModal({ game, onClose }: GamePlayerModalProps) {
               </motion.button>
             </header>
 
-            <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black">
+            <div
+              className="relative shrink-0 overflow-hidden bg-black"
+              style={{ width: layout.gameWidth, height: layout.gameHeight }}
+            >
               <AnimatePresence mode="wait">
                 {loading && (
                   <motion.div

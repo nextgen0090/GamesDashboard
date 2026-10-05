@@ -43,6 +43,17 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Verify dist assets exist
+        run: |
+          test -f dist/index.html
+          JS_COUNT=$(find dist/assets -maxdepth 1 -name '*.js' | wc -l)
+          CSS_COUNT=$(find dist/assets -maxdepth 1 -name '*.css' | wc -l)
+          if [ "$JS_COUNT" -lt 1 ] || [ "$CSS_COUNT" -lt 1 ]; then
+            echo "::error::dist/assets is missing JS/CSS. Do not commit dist/ to git — build must run on CI."
+            ls -laR dist || true
+            exit 1
+          fi
+
       - name: Verify game list in bundle
         run: |
           grep -q "Wonder Voyage" dist/assets/*.js || (echo "::warning::Wonder Voyage not in bundle — check src/data/games.ts" && true)

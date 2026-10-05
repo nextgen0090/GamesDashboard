@@ -1,6 +1,9 @@
-# Cloudflare Workers — static Vite build from ./dist
-# In Workers Builds: Build command = npm ci && npm run build
-# Deploy command = npx wrangler deploy
+# Cloudflare Workers Builds (Workers → Builds → Settings):
+#   Root directory:  /
+#   Build command:   (leave empty OR npm ci && npm run build)
+#   Deploy command:  npm ci && npm run deploy
+#
+# "npm run deploy" = vite build → ./dist, then wrangler deploy
 
 name = "gamesdashboard"
 compatibility_date = "2024-12-01"

@@ -1,9 +1,8 @@
-# Cloudflare Workers Builds (Workers → Builds → Settings):
-#   Root directory:  /
-#   Build command:   (leave empty OR npm ci && npm run build)
-#   Deploy command:  npm ci && npm run deploy
+# Worker name must match your Cloudflare Worker (or create on first deploy).
+# Auto-deploy: push to main → GitHub Actions (.github/workflows/deploy-cloudflare.yml)
 #
-# "npm run deploy" = vite build → ./dist, then wrangler deploy
+# Optional Cloudflare Workers Builds (if you use it instead of GitHub Actions):
+#   Deploy command: npm ci && npm run deploy
 
 name = "gamesdashboard"
 compatibility_date = "2024-12-01"

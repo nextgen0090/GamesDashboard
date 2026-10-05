@@ -1,20 +1,25 @@
 # Games Dashboard (React + Vite)
 
-## Cloudflare Workers deploy
+## Auto-deploy on git push (recommended)
 
-In **Workers Builds → Settings**, use:
+Push to **`main`** → GitHub Actions runs **`.github/workflows/deploy-cloudflare.yml`** → build + `wrangler deploy`.
 
-| Setting | Value |
-|--------|--------|
-| **Root directory** | `/` (repo root — where `package.json` is) |
-| **Build command** | *(optional)* `npm ci && npm run build` |
-| **Deploy command** | **`npm ci && npm run deploy`** |
+### One-time GitHub secrets
 
-Use **`npm run deploy`**, not `npx wrangler deploy` alone — Wrangler needs the `dist/` folder from `npm run build`.
+Repo **Settings → Secrets and variables → Actions → New repository secret**:
 
-The Vite app outputs to `dist/`. `wrangler.toml` serves those files as a SPA.
+| Secret | Where to get it |
+|--------|------------------|
+| `CLOUDFLARE_API_TOKEN` | [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens) → **Create Token** → template **Edit Cloudflare Workers** (or custom: Account + Workers Scripts edit) |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → any zone/workers URL, or **Workers & Pages** → right sidebar **Account ID** |
 
-Local deploy: `npm run deploy` (build + wrangler).
+Then push this repo to `main`. Check **Actions** tab for the deploy run.
+
+Local deploy: `npm run deploy`
+
+### Optional: Cloudflare Workers Builds
+
+If you also use Workers Builds, set **Deploy command** to `npm ci && npm run deploy` (not `npx wrangler deploy` alone). To avoid double deploys, disable either GitHub Actions or automatic Workers Builds—pick one.
 
 ---
 

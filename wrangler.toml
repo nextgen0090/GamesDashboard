@@ -11,4 +11,4 @@ compatibility_date = "2024-12-01"
 directory = "./dist"
 # App has no client-side routes (single `/` only). Avoid serving index.html for
 # missing /assets/* files — that causes "MIME type text/html" module errors.
-not_found_handling = "404-page"
+not_found_handling = "none"

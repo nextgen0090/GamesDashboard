@@ -15,6 +15,9 @@ export const games: Game[] = [
         gradientTo: '#8338ec',
         glow: '#ff006e',
         category: 'Puzzle',
+        resolutionWidth: 1920,
+        resolutionHeight: 1080,
+        orientation: 'landscape',
     },
     {
         id: 'city-cargo',
@@ -26,6 +29,9 @@ export const games: Game[] = [
         gradientTo: '#8338ec',
         glow: '#ff006e',
         category: 'Puzzle',
+        resolutionWidth: 1920,
+        resolutionHeight: 1080,
+        orientation: 'landscape',
     },
     {
         id: 'neon-slots',
@@ -37,6 +43,9 @@ export const games: Game[] = [
         gradientTo: '#8338ec',
         glow: '#ff006e',
         category: 'Slots',
+        resolutionWidth: 1920,
+        resolutionHeight: 1080,
+        orientation: 'landscape',
     },
     //{
     //    id: 'golden-fortune',

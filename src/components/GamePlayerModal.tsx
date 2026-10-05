@@ -1,6 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useCallback, useEffect, useState } from 'react'
+import { useModalGameLayout } from '../hooks/useModalGameLayout'
 import type { Game } from '../types/game'
+import { MODAL_PAD_PX } from '../utils/gameViewport'
+import { GamePlayerViewport } from './GamePlayerViewport'
 
 type GamePlayerModalProps = {
   game: Game | null
@@ -9,6 +12,7 @@ type GamePlayerModalProps = {
 
 export function GamePlayerModal({ game, onClose }: GamePlayerModalProps) {
   const [loading, setLoading] = useState(true)
+  const layout = useModalGameLayout(game)
 
   useEffect(() => {
     if (game) setLoading(true)
@@ -34,7 +38,8 @@ export function GamePlayerModal({ game, onClose }: GamePlayerModalProps) {
       {game && (
         <motion.div
           key="game-modal-root"
-          className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4 md:p-6"
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden"
+          style={{ padding: MODAL_PAD_PX }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -54,21 +59,25 @@ export function GamePlayerModal({ game, onClose }: GamePlayerModalProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="game-player-title"
-            className="relative flex max-h-[94dvh] w-full max-w-6xl flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-[#120a20]/95 shadow-2xl backdrop-blur-xl sm:rounded-2xl"
-            initial={{ opacity: 0, y: '100%', scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: '40%', scale: 0.98 }}
-            transition={{ type: 'spring', stiffness: 340, damping: 32 }}
+            className="relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#120a20]/95 shadow-2xl backdrop-blur-xl"
             style={{
+              width: layout.width,
+              height: layout.height,
+              maxWidth: '98vw',
+              maxHeight: '94dvh',
               boxShadow: `0 0 0 1px color-mix(in srgb, ${game.glow} 25%, transparent), 0 0 80px color-mix(in srgb, ${game.glow} 18%, transparent), 0 30px 60px -20px rgba(0,0,0,0.85)`,
             }}
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 340, damping: 32 }}
           >
             <div
               className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ffc947] to-transparent opacity-70"
               aria-hidden
             />
 
-            <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/[0.08] px-4 py-3 sm:px-5">
+            <header className="flex h-[52px] shrink-0 items-center justify-between gap-3 border-b border-white/[0.08] px-4 sm:px-5">
               <div className="min-w-0">
                 <p className="font-display text-[9px] font-bold uppercase tracking-[0.3em] text-[#ff2d95]">
                   Now Playing
@@ -94,7 +103,7 @@ export function GamePlayerModal({ game, onClose }: GamePlayerModalProps) {
               </motion.button>
             </header>
 
-            <div className="relative min-h-[52dvh] flex-1 bg-black sm:min-h-[min(62dvh,720px)]">
+            <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-black">
               <AnimatePresence mode="wait">
                 {loading && (
                   <motion.div
@@ -131,12 +140,10 @@ export function GamePlayerModal({ game, onClose }: GamePlayerModalProps) {
                 )}
               </AnimatePresence>
 
-              <iframe
-                key={game.id}
-                title={game.name}
-                src={game.url}
-                className="h-full min-h-[52dvh] w-full border-0 sm:min-h-[min(62dvh,720px)]"
-                allow="fullscreen; autoplay; gamepad"
+              <GamePlayerViewport
+                game={game}
+                width={layout.gameWidth}
+                height={layout.gameHeight}
                 onLoad={handleLoad}
               />
             </div>

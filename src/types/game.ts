@@ -8,4 +8,9 @@ export interface Game {
   gradientTo: string
   glow: string
   category: string
+  /** Unity WebGL default canvas size (match Player → WebGL template / build settings) */
+  resolutionWidth: number
+  resolutionHeight: number
+  /** Used only when width/height omitted; prefer exact resolution when known */
+  orientation?: 'landscape' | 'portrait'
 }

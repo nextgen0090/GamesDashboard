@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { games } from '../data/games'
 
 type DashboardNavProps = {
   contentMaxClass: string
@@ -34,7 +35,7 @@ export function DashboardNav({ contentMaxClass }: DashboardNavProps) {
 
         <div className="flex shrink-0 items-center gap-2">
           <span className="hidden rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-medium uppercase tracking-wide text-zinc-500 sm:inline">
-            8 Live
+            {games.length} Live
           </span>
           <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/18 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-semibold text-emerald-400/90">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />

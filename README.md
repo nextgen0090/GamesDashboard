@@ -17,9 +17,23 @@ Then push this repo to `main`. Check **Actions** tab for the deploy run.
 
 Local deploy: `npm run deploy`
 
-### Optional: Cloudflare Workers Builds
+### Cloudflare Workers Builds (dashboard deploy)
 
-If you also use Workers Builds, set **Deploy command** to `npm ci && npm run deploy` (not `npx wrangler deploy` alone). To avoid double deploys, disable either GitHub Actions or automatic Workers Builds—pick one.
+Workers **already runs** `npm clean-install`. You must **create `dist/`** before Wrangler uploads.
+
+In **Workers → gamesdashboard → Builds → Settings**:
+
+| Setting | Value |
+|--------|--------|
+| **Root directory** | `/` |
+| **Build command** | *(empty)* or `npm run build` |
+| **Deploy command** | **`npm run deploy`** |
+
+Do **not** use **`npx wrangler deploy` alone** — there is no `dist/` folder until `npm run build` runs.
+
+`wrangler.toml` includes `[build] command = "npm run build"` so `npx wrangler deploy` also works **after** you push this file, if you prefer Deploy = `npx wrangler deploy`.
+
+Pick **one** auto-deploy path: GitHub Actions **or** Workers Builds (not both), unless you want duplicate deploys.
 
 ---
 

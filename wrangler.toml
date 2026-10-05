@@ -1,14 +1,16 @@
-# Worker name must match your Cloudflare Worker (or create on first deploy).
-# Auto-deploy: push to main → GitHub Actions (.github/workflows/deploy-cloudflare.yml)
+# Cloudflare Workers Builds — recommended settings:
+#   Build command:  (leave empty)
+#   Deploy command:  npm run deploy
 #
-# Optional Cloudflare Workers Builds (if you use it instead of GitHub Actions):
-#   Deploy command: npm ci && npm run deploy
+# Or: Build = npm run build , Deploy = npx wrangler deploy
+# (Wrangler runs [build] below before upload when using npx wrangler deploy)
 
 name = "gamesdashboard"
 compatibility_date = "2024-12-01"
 
+[build]
+command = "npm run build"
+
 [assets]
 directory = "./dist"
-# App has no client-side routes (single `/` only). Avoid serving index.html for
-# missing /assets/* files — that causes "MIME type text/html" module errors.
 not_found_handling = "none"

@@ -5,7 +5,18 @@ import type { Game } from '../types/game'
  * Images live in `/public/games/` — swap files or paths as needed.
  */
 export const games: Game[] = [
-  {
+   {
+    id: 'wonder-voyage',
+    name: 'Wonder Voyage',
+    tagline: 'Test your memory',
+        url: 'https://shaffan-nextgen.github.io/WonderVoyage-Build/',
+    image: '/games/neon-slots.svg',
+    gradientFrom: '#ff006e',
+    gradientTo: '#8338ec',
+    glow: '#ff006e',
+    category: 'Slots',
+   },
+   {
     id: 'neon-slots',
     name: 'Neon Slots',
     tagline: 'Spin the reels under city lights',

@@ -8,6 +8,10 @@ export interface Game {
   gradientTo: string
   glow: string
   category: string
+  /** Lobby badges (optional) */
+  featured?: boolean
+  popular?: boolean
+  isNew?: boolean
   /** Optional: Unity canvas size for the play modal (defaults to 1280×720) */
   resolutionWidth?: number
   resolutionHeight?: number

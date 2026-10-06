@@ -1,71 +1,171 @@
-import { motion } from 'framer-motion'
+import { useEffect, useRef } from 'react'
 
-const orbs = [
-  { size: 520, x: '-5%', y: '-10%', color: '#7c3aed', delay: 0 },
-  { size: 440, x: '70%', y: '-5%', color: '#db2777', delay: 0.5 },
-  { size: 380, x: '55%', y: '55%', color: '#6d28d9', delay: 1 },
-  { size: 320, x: '-8%', y: '60%', color: '#f59e0b', delay: 1.4 },
-]
-
-const stars = Array.from({ length: 40 }, (_, i) => ({
-  id: i,
-  left: `${(i * 17 + 7) % 100}%`,
-  top: `${(i * 23 + 11) % 100}%`,
-  size: i % 3 === 0 ? 2 : 1,
-  opacity: 0.12 + (i % 5) * 0.06,
-}))
+function motionReduced() {
+  return (
+    document.documentElement.classList.contains('portal-reduced-motion') ||
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+}
 
 export function AmbientBackground() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    let disposed = false
+    let raf = 0
+    let frame = 0
+    let visible = document.visibilityState === 'visible'
+    let disposeThree: (() => void) | undefined
+
+    const isCoarse = window.matchMedia('(pointer: coarse)').matches
+
+    const onVisibility = () => {
+      visible = document.visibilityState === 'visible'
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+
+    import('three').then((THREE) => {
+      if (disposed) return
+
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: false,
+        powerPreference: 'low-power',
+      })
+      renderer.setClearColor(0x000000, 0)
+
+      const scene = new THREE.Scene()
+      const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 80)
+      camera.position.z = 14
+
+      const makeField = (count: number, spread: [number, number, number], size: number, opacity: number) => {
+        const positions = new Float32Array(count * 3)
+        const colors = new Float32Array(count * 3)
+        /* #9d6bff, #e84a9a, #ffc947, deep panel purple */
+        const palette = [
+          [0.616, 0.42, 1],
+          [0.91, 0.29, 0.604],
+          [1, 0.788, 0.278],
+          [0.42, 0.38, 0.72],
+        ] as const
+
+        for (let i = 0; i < count; i++) {
+          positions[i * 3] = (Math.random() - 0.5) * spread[0]
+          positions[i * 3 + 1] = (Math.random() - 0.5) * spread[1]
+          positions[i * 3 + 2] = (Math.random() - 0.5) * spread[2]
+          const c = palette[Math.floor(Math.random() * palette.length)]
+          colors[i * 3] = c[0]
+          colors[i * 3 + 1] = c[1]
+          colors[i * 3 + 2] = c[2]
+        }
+
+        const geometry = new THREE.BufferGeometry()
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+        const material = new THREE.PointsMaterial({
+          size,
+          transparent: true,
+          opacity,
+          depthWrite: false,
+          sizeAttenuation: true,
+          vertexColors: true,
+          blending: THREE.AdditiveBlending,
+        })
+        return new THREE.Points(geometry, material)
+      }
+
+      const reduced = motionReduced()
+      const mainCount = reduced ? 90 : isCoarse ? 180 : 300
+      const dustCount = reduced ? 0 : isCoarse ? 60 : 100
+
+      const mainField = makeField(mainCount, [26, 14, 12], isCoarse ? 0.028 : 0.022, 0.26)
+      const dustField = dustCount > 0 ? makeField(dustCount, [32, 18, 16], 0.012, 0.14) : null
+
+      scene.add(mainField)
+      if (dustField) scene.add(dustField)
+
+      const resize = () => {
+        const w = window.innerWidth
+        const h = window.innerHeight
+        renderer.setSize(w, h, false)
+        camera.aspect = w / h
+        camera.updateProjectionMatrix()
+      }
+      resize()
+      window.addEventListener('resize', resize)
+
+      const readParallax = () => {
+        const root = getComputedStyle(document.documentElement)
+        const px = Number.parseFloat(root.getPropertyValue('--lobby-px')) || 0
+        const py = Number.parseFloat(root.getPropertyValue('--lobby-py')) || 0
+        return { px, py }
+      }
+
+      const tick = () => {
+        raf = requestAnimationFrame(tick)
+        if (!visible) return
+
+        const { px, py } = readParallax()
+        const reducedNow = motionReduced()
+
+        camera.position.x = px * 0.32
+        camera.position.y = py * 0.22
+        camera.lookAt(px * 0.15, py * 0.1, 0)
+
+        if (!reducedNow) {
+          frame += 0.0035
+          mainField.rotation.y = frame * 0.14 + px * 0.08
+          mainField.rotation.x = py * 0.06
+          if (dustField) {
+            dustField.rotation.y = -frame * 0.09 + px * 0.05
+            dustField.rotation.x = -py * 0.04
+          }
+        }
+
+        renderer.render(scene, camera)
+      }
+      tick()
+
+      disposeThree = () => {
+        cancelAnimationFrame(raf)
+        window.removeEventListener('resize', resize)
+        mainField.geometry.dispose()
+        ;(mainField.material as { dispose: () => void }).dispose()
+        if (dustField) {
+          dustField.geometry.dispose()
+          ;(dustField.material as { dispose: () => void }).dispose()
+        }
+        renderer.dispose()
+      }
+
+      if (disposed) disposeThree()
+    })
+
+    return () => {
+      disposed = true
+      cancelAnimationFrame(raf)
+      document.removeEventListener('visibilitychange', onVisibility)
+      disposeThree?.()
+    }
+  }, [])
+
   return (
-    <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden>
-      <div className="absolute inset-0 bg-[#0a0614]" />
-
-      <motion.div
-        className="ambient-gradient absolute inset-0 opacity-90"
-        animate={{ opacity: [0.75, 0.95, 0.75] }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-      />
-
-      {stars.map((star) => (
-        <div
-          key={star.id}
-          className="absolute rounded-full bg-white"
-          style={{
-            left: star.left,
-            top: star.top,
-            width: star.size,
-            height: star.size,
-            opacity: star.opacity,
-          }}
-        />
-      ))}
-      {orbs.map((orb) => (
-        <motion.div
-          key={`${orb.x}-${orb.y}`}
-          className="absolute rounded-full blur-[120px]"
-          style={{
-            width: orb.size,
-            height: orb.size,
-            left: orb.x,
-            top: orb.y,
-            background: orb.color,
-            opacity: 0.32,
-          }}
-          animate={{
-            x: [0, 22, -14, 0],
-            y: [0, -16, 12, 0],
-            scale: [1, 1.08, 0.96, 1],
-            opacity: [0.28, 0.38, 0.3, 0.28],
-          }}
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: orb.delay,
-          }}
-        />
-      ))}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0614]/25 via-transparent to-[#0a0614]/80" />
+    <div className="ambient-root pointer-events-none fixed inset-0 z-0 overflow-hidden" aria-hidden>
+      <div className="ambient-base absolute inset-0" />
+      <div className="ambient-parallax absolute inset-0">
+        <div className="ambient-orb ambient-orb-a" />
+        <div className="ambient-orb ambient-orb-b" />
+        <div className="ambient-orb ambient-orb-c" />
+      </div>
+      <div className="ambient-grid absolute inset-0" />
+      <canvas ref={canvasRef} className="ambient-canvas absolute inset-0 h-full w-full" />
+      <div className="ambient-gradient absolute inset-0" />
+      <div className="ambient-vignette absolute inset-0" />
+      <div className="ambient-noise absolute inset-0" />
     </div>
   )
 }

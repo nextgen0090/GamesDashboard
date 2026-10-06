@@ -15,6 +15,7 @@ export const games: Game[] = [
         gradientTo: '#8338ec',
         glow: '#ff006e',
         category: 'Puzzle',
+        featured: true,
     },
     {
         id: 'city-cargo',
@@ -37,6 +38,7 @@ export const games: Game[] = [
         gradientTo: '#8338ec',
         glow: '#ff006e',
         category: 'Arcade',
+        popular: true,
     },
     {
         id: 'neon-slots',
@@ -48,6 +50,7 @@ export const games: Game[] = [
         gradientTo: '#8338ec',
         glow: '#ff006e',
         category: 'Slots',
+        popular: true,
     },
     {
         id: 'golden-fortune',
@@ -59,6 +62,7 @@ export const games: Game[] = [
         gradientTo: '#ef4444',
         glow: '#fbbf24',
         category: 'Jackpot',
+        popular: true,
     },
     {
         id: 'crystal-match',
@@ -92,6 +96,7 @@ export const games: Game[] = [
         gradientTo: '#ec4899',
         glow: '#e879f9',
         category: 'Arcade',
+        isNew: true,
     },
     {
         id: 'poker-star',
@@ -103,6 +108,7 @@ export const games: Game[] = [
         gradientTo: '#8b5cf6',
         glow: '#818cf8',
         category: 'Cards',
+        popular: true,
     },
     {
         id: 'wheel-blaze',
@@ -114,6 +120,7 @@ export const games: Game[] = [
         gradientTo: '#dc2626',
         glow: '#fb923c',
         category: 'Wheel',
+        isNew: true,
     },
     {
         id: 'blackjack-pro',
@@ -125,5 +132,71 @@ export const games: Game[] = [
         gradientTo: '#0ea5e9',
         glow: '#2dd4bf',
         category: 'Cards',
+        isNew: true,
     },
 ]
+
+export const featuredGame = games.find((g) => g.featured) ?? games[0]
+
+/** Hero slider — featured titles first, then popular/fallback without duplicating entries. */
+export const featuredSliderGames: Game[] = (() => {
+  const featured = games.filter((g) => g.featured)
+  if (featured.length >= 2) return featured.slice(0, 6)
+  const mix = [
+    ...new Map(
+      [...featured, ...games.filter((g) => g.popular)].map((g) => [g.id, g] as const),
+    ).values(),
+  ]
+  if (mix.length >= 2) return mix.slice(0, 6)
+  return games.slice(0, Math.min(5, games.length))
+})()
+
+/** Featured row (excludes the hero spotlight title) */
+export const featuredTitles = games.filter(
+  (g) => g.featured && g.id !== featuredGame.id,
+)
+
+export const popularGames = games.filter((g) => g.popular)
+
+export const newGames = games.filter((g) => g.isNew)
+
+const sortedCategories = Array.from(new Set(games.map((g) => g.category))).sort()
+
+export const gameCategories = [
+  'All',
+  ...sortedCategories,
+  'New',
+  'Popular',
+  'Favorites',
+] as const
+
+export function filterGamesByCategory(category: string, favoriteIds?: Set<string>): Game[] {
+  if (category === 'All') return games
+  if (category === 'New') return games.filter((g) => g.isNew)
+  if (category === 'Popular') return games.filter((g) => g.popular)
+  if (category === 'Favorites') {
+    const fav = favoriteIds ?? new Set<string>()
+    return games.filter((g) => fav.has(g.id))
+  }
+  return games.filter((g) => g.category === category)
+}
+
+export function searchGames(query: string, pool: Game[] = games): Game[] {
+  const q = query.trim().toLowerCase()
+  if (!q) return pool
+  return pool.filter(
+    (g) =>
+      g.name.toLowerCase().includes(q) ||
+      g.category.toLowerCase().includes(q) ||
+      g.tagline.toLowerCase().includes(q),
+  )
+}
+
+/** Recommended row — featured + popular, deduped, cap 4 */
+export const recommendedGames = [
+  ...new Map(
+    [...games.filter((g) => g.featured), ...games.filter((g) => g.popular)].map((g) => [g.id, g]),
+  ).values(),
+]
+  .filter((g) => g.id !== featuredGame.id)
+  .slice(0, 4)

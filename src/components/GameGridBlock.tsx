@@ -73,8 +73,8 @@ export function GameGridBlock({
   }
 
   return (
-    <section className="home-grid-block mb-8 sm:mb-9" aria-label={title}>
-      <div className="home-grid-block-header relative z-[2] mb-3.5 flex flex-wrap items-end justify-between gap-2">
+    <section className="mb-8 sm:mb-9" aria-label={title}>
+      <div className="mb-3.5 flex flex-wrap items-end justify-between gap-2">
         <div>
           <h2 className="font-display text-xs font-bold uppercase tracking-[0.16em] text-white sm:text-sm">
             {title}

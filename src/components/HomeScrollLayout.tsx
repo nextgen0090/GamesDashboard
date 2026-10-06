@@ -29,14 +29,12 @@ export function HomeScrollLayout({
     offset: ['start start', 'end start'],
   })
 
-  /* ~1–2 wheel ticks: zoom in first half of stage, then fade so grids never sit on the hero art */
-  const heroScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1, 1])
-  const heroY = useTransform(scrollYProgress, [0, 0.5, 1], [0, -8, -8])
-  const heroShadow = useTransform(scrollYProgress, [0, 0.5, 1], [0.38, 0.18, 0.18])
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.55, 0.92], [1, 1, 0])
+  const heroScale = useTransform(scrollYProgress, [0, 1], [1.16, 1])
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, -12])
+  const heroShadow = useTransform(scrollYProgress, [0, 1], [0.45, 0.2])
   const heroFilter = useTransform(
     heroShadow,
-    (v) => `drop-shadow(0 20px 40px rgba(0,0,0,${v}))`,
+    (v) => `drop-shadow(0 24px 48px rgba(0,0,0,${v}))`,
   )
 
   if (reducedMotion) {
@@ -86,7 +84,6 @@ export function HomeScrollLayout({
               style={{
                 scale: heroScale,
                 y: heroY,
-                opacity: heroOpacity,
                 filter: heroFilter,
               }}
             >
@@ -96,32 +93,30 @@ export function HomeScrollLayout({
         </div>
       </div>
 
-      <div className="home-scroll-below-hero">
-        <div className="home-scroll-reveal-section">
-          <GameGridBlock
-            title="Popular now"
-            subtitle="Quick picks"
-            games={popularGames.slice(0, 4)}
-            onPlay={onPlay}
-            onDetail={onDetail}
-            favorites={favorites}
-            onToggleFavorite={onToggleFavorite}
-            revealDelay={0.05}
-          />
-        </div>
+      <div className="home-scroll-reveal-section">
+        <GameGridBlock
+          title="Popular now"
+          subtitle="Quick picks"
+          games={popularGames.slice(0, 4)}
+          onPlay={onPlay}
+          onDetail={onDetail}
+          favorites={favorites}
+          onToggleFavorite={onToggleFavorite}
+          revealDelay={0.05}
+        />
+      </div>
 
-        <div className="home-scroll-reveal-section">
-          <GameGridBlock
-            title="New arrivals"
-            subtitle="Latest titles"
-            games={newGames.slice(0, 4)}
-            onPlay={onPlay}
-            onDetail={onDetail}
-            favorites={favorites}
-            onToggleFavorite={onToggleFavorite}
-            revealDelay={0.1}
-          />
-        </div>
+      <div className="home-scroll-reveal-section">
+        <GameGridBlock
+          title="New arrivals"
+          subtitle="Latest titles"
+          games={newGames.slice(0, 4)}
+          onPlay={onPlay}
+          onDetail={onDetail}
+          favorites={favorites}
+          onToggleFavorite={onToggleFavorite}
+          revealDelay={0.1}
+        />
       </div>
     </>
   )

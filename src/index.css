@@ -586,18 +586,15 @@ html.portal-reduced-motion .portal-announcement-static {
 /* Home: scroll-scrub hero → compact, then reveal grids */
 .home-hero-scroll-stage {
   position: relative;
-  z-index: 0;
-  isolation: isolate;
   width: 100%;
-  /* Scrub distance ≈ 1–2 wheel ticks (zoom is front-loaded in JS) */
-  height: clamp(280px, 46vh, 420px);
-  margin-bottom: 0;
+  height: calc(100vh + min(42vh, 360px));
+  margin-bottom: -2rem;
 }
 
 .home-hero-scroll-sticky {
   position: sticky;
   top: calc(3.5rem + env(safe-area-inset-top, 0px) + 2.25rem);
-  z-index: 1;
+  z-index: 6;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -607,38 +604,24 @@ html.portal-reduced-motion .portal-announcement-static {
 }
 
 .home-hero-scroll-slider {
-  transform-origin: 50% 35%;
+  transform-origin: 50% 50%;
   will-change: transform, filter;
   margin-inline: auto;
   overflow: visible;
 }
 
 .home-hero-scroll-slider .featured-slider {
-  min-height: clamp(380px, 58vh, 680px);
-  margin-bottom: 0;
+  min-height: clamp(520px, 80vh, 880px);
 }
 
 .home-hero-scroll-slider .featured-slider-media {
-  min-height: clamp(260px, 44vh, 680px);
+  min-height: clamp(320px, 58vh, 880px);
 }
 
 @media (min-width: 768px) {
   .home-hero-scroll-slider .featured-slider-media {
-    min-height: clamp(380px, 58vh, 680px);
+    min-height: clamp(520px, 80vh, 880px);
   }
-}
-
-.home-hero-scroll-slider .featured-slider-art {
-  inset: 0;
-}
-
-.home-hero-scroll-slider .featured-slider-art[style] {
-  transform: translate3d(
-      calc(var(--hero-px, 0) * 4px),
-      calc(var(--hero-py, 0) * 3px),
-      0
-    )
-    scale(1.02) !important;
 }
 
 .home-hero-slider-shell {
@@ -720,40 +703,15 @@ html.portal-reduced-motion .home-scroll-hint-wrap {
   display: none;
 }
 
-.home-scroll-below-hero {
-  position: relative;
-  z-index: 12;
-  isolation: isolate;
-  box-sizing: border-box;
-  width: 100vw;
-  max-width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  padding-inline: max(1rem, env(safe-area-inset-left, 0px))
-    max(1rem, env(safe-area-inset-right, 0px));
-  padding-top: clamp(1rem, 2.5vh, 1.75rem);
-  background: var(--color-lobby-bg);
-  box-shadow: 0 -72px 56px 40px var(--color-lobby-bg);
-}
-
-@media (min-width: 640px) {
-  .home-scroll-below-hero {
-    padding-inline: max(1.5rem, env(safe-area-inset-left, 0px))
-      max(1.5rem, env(safe-area-inset-right, 0px));
-  }
-}
-
-@media (min-width: 1024px) {
-  .home-scroll-below-hero {
-    padding-inline: max(2rem, env(safe-area-inset-left, 0px))
-      max(2rem, env(safe-area-inset-right, 0px));
-  }
-}
-
 .home-scroll-reveal-section {
   position: relative;
-  z-index: 1;
+  z-index: 8;
   will-change: transform, opacity;
+}
+
+.home-scroll-reveal-section:first-of-type {
+  margin-top: -1rem;
+  padding-top: 0.25rem;
 }
 
 /* Full-width hero, centered on viewport inside .portal-content */

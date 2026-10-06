@@ -59,12 +59,10 @@ export function GamePlayerModal({ game, onClose }: GamePlayerModalProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="game-player-title"
-            className="relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#120a20]/95 shadow-2xl backdrop-blur-xl"
+            className="relative flex max-h-[94dvh] max-w-[98vw] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#120a20]/95 shadow-2xl backdrop-blur-xl"
             style={{
               width: layout.width,
               height: layout.height,
-              maxWidth: '98vw',
-              maxHeight: '94dvh',
               boxShadow: `0 0 0 1px color-mix(in srgb, ${game.glow} 25%, transparent), 0 0 80px color-mix(in srgb, ${game.glow} 18%, transparent), 0 30px 60px -20px rgba(0,0,0,0.85)`,
             }}
             initial={{ opacity: 0, scale: 0.94 }}
@@ -104,8 +102,8 @@ export function GamePlayerModal({ game, onClose }: GamePlayerModalProps) {
             </header>
 
             <div
-              className="relative shrink-0 overflow-hidden bg-black"
-              style={{ width: layout.gameWidth, height: layout.gameHeight }}
+              className="relative flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden bg-black"
+              style={{ width: layout.gameWidth, height: layout.gameHeight, maxHeight: 'calc(94dvh - 52px)' }}
             >
               <AnimatePresence mode="wait">
                 {loading && (

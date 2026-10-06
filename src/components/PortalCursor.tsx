@@ -61,7 +61,7 @@ export function PortalCursor({ active }: PortalCursorProps) {
         const node = trailRefs.current[i]
         if (node) {
           node.style.transform = `translate3d(${tr.x}px, ${tr.y}px, 0) translate(-50%, -50%)`
-          node.style.opacity = String(0.55 - i * 0.07)
+          node.style.opacity = String(0.32 - i * 0.04)
         }
       })
 

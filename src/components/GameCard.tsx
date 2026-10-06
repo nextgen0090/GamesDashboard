@@ -90,11 +90,11 @@ export function GameCard({
           />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#07070f]/90 via-transparent to-transparent" />
 
-          <span className="pointer-events-none absolute left-2 top-2 rounded border border-white/10 bg-[#07070f]/75 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-zinc-300 sm:text-[9px]">
+          <span className="lobby-card-category pointer-events-none absolute left-2 top-2 z-[3]">
             {game.category}
           </span>
           {badge && (
-            <span className="pointer-events-none absolute right-2 top-2 rounded border border-[#ffc947]/25 bg-[#ffc947]/10 px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-[#ffc947] sm:text-[9px]">
+            <span className="lobby-card-status-badge pointer-events-none absolute right-2 top-2 z-[3]">
               {badge}
             </span>
           )}
@@ -113,15 +113,18 @@ export function GameCard({
           )}
         </div>
 
-        <div className={`relative z-[1] flex flex-1 flex-col gap-1.5 p-3 sm:gap-2 ${compact ? 'p-2.5' : 'sm:p-3.5'}`}>
-          <p className="truncate text-left font-display text-[11px] font-bold uppercase tracking-wide text-white sm:text-xs">
-            {game.name}
-          </p>
+        <div
+          className={`lobby-card-body relative z-[1] flex flex-1 flex-col gap-1.5 p-3 sm:gap-2 ${compact ? 'p-2.5' : 'sm:p-3.5'}`}
+        >
+          <p className="lobby-card-title truncate text-left">{game.name}</p>
           {!compact && (
-            <p className="line-clamp-2 text-[10px] leading-snug text-zinc-500 sm:text-[11px]">{game.tagline}</p>
+            <p className="lobby-card-tagline line-clamp-2 text-[11px] leading-snug sm:text-xs">{game.tagline}</p>
           )}
-          <p className="text-[10px] text-zinc-500">
-            <span className="text-[#ffc947]">★</span> {rating.toFixed(1)}
+          <p className="lobby-card-rating">
+            <span className="lobby-card-rating-star" aria-hidden>
+              ★
+            </span>
+            <span className="lobby-card-rating-value">{rating.toFixed(1)}</span>
           </p>
           <div className="mt-auto pt-1" onClick={stopBubble}>
             <PlayButton glow={game.glow} onClick={() => onPlay(game)} fullWidth compact />

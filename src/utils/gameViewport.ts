@@ -57,6 +57,18 @@ export function computeFitDimensions(
 const MODAL_HEADER_PX = 52
 const MODAL_PAD_PX = 12
 
+/** Viewport size for modal fit (respects mobile browser chrome via visualViewport). */
+export function getPlayViewportSize(): { width: number; height: number } {
+  if (typeof window === 'undefined') {
+    return { width: 1280, height: 720 }
+  }
+  const vv = window.visualViewport
+  return {
+    width: Math.floor(vv?.width ?? window.innerWidth),
+    height: Math.floor(vv?.height ?? window.innerHeight),
+  }
+}
+
 export function computeModalSize(
   game: Game,
   viewportWidth: number,
@@ -65,15 +77,17 @@ export function computeModalSize(
   const { width: gw, height: gh } = getViewportBoxSize(game)
   const maxOuterW = viewportWidth * 0.98 - MODAL_PAD_PX * 2
   const maxOuterH = viewportHeight * 0.94 - MODAL_PAD_PX * 2
-  const maxGameH = maxOuterH - MODAL_HEADER_PX
+  const maxGameH = Math.max(120, maxOuterH - MODAL_HEADER_PX)
 
   const fit = computeFitDimensions(maxOuterW, maxGameH, gw, gh)
+  const gameWidth = Math.floor(fit.width)
+  const gameHeight = Math.floor(fit.height)
 
   return {
-    width: Math.floor(fit.width),
-    height: Math.floor(fit.height + MODAL_HEADER_PX),
-    gameWidth: Math.floor(fit.width),
-    gameHeight: Math.floor(fit.height),
+    width: gameWidth,
+    height: gameHeight + MODAL_HEADER_PX,
+    gameWidth,
+    gameHeight,
   }
 }
 

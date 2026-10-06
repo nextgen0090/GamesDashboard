@@ -8,20 +8,23 @@ type GamePlayerViewportProps = {
   onLoad: () => void
 }
 
-/** Scale entire Unity page (1280×720) to fill the card without cropping. */
+/** Scale Unity page at native canvas size to fit the modal without cropping. */
 export function GamePlayerViewport({ game, width, height, onLoad }: GamePlayerViewportProps) {
   const box = getViewportBoxSize(game)
-  const { scale } = computeFitDimensions(width, height, box.width, box.height)
-  const scaledW = box.width * scale
-  const scaledH = box.height * scale
+  const { scale, width: scaledW, height: scaledH } = computeFitDimensions(
+    width,
+    height,
+    box.width,
+    box.height,
+  )
 
   return (
     <div
-      className="relative flex items-center justify-center overflow-hidden bg-[#231F20]"
-      style={{ width, height }}
+      className="relative flex h-full w-full items-center justify-center overflow-hidden bg-[#231F20]"
+      style={{ width, height, minWidth: 0, minHeight: 0 }}
     >
       <div
-        className="relative overflow-hidden"
+        className="relative shrink-0 overflow-hidden"
         style={{ width: scaledW, height: scaledH }}
       >
         <iframe

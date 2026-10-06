@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Game } from '../types/game'
-import { computeModalSize } from '../utils/gameViewport'
+import { computeModalSize, getPlayViewportSize } from '../utils/gameViewport'
 
 export function useModalGameLayout(game: Game | null) {
   const [layout, setLayout] = useState({
@@ -14,7 +14,8 @@ export function useModalGameLayout(game: Game | null) {
     if (!game) return
 
     const update = () => {
-      setLayout(computeModalSize(game, window.innerWidth, window.innerHeight))
+      const { width, height } = getPlayViewportSize()
+      setLayout(computeModalSize(game, width, height))
     }
 
     update()

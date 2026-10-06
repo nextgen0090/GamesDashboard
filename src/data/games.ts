@@ -39,6 +39,17 @@ export const games: Game[] = [
         category: 'Arcade',
     },
     {
+        id: 'color-snake',
+        name: 'Color Snake',
+        tagline: 'Classic snake with a twist',
+        url: 'https://shaffan-nextgen.github.io/ColorSnake-Build/',
+        image: '/games/color-snake.png',
+        gradientFrom: '#ff006e',
+        gradientTo: '#8338ec',
+        glow: '#ff006e',
+        category: 'Arcade',
+    },
+    {
         id: 'neon-slots',
         name: 'Neon Slots',
         tagline: 'Spin the reels under city lights',

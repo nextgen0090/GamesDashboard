@@ -589,12 +589,14 @@ html.portal-reduced-motion .portal-announcement-static {
   width: 100%;
   height: calc(100vh + min(42vh, 360px));
   margin-bottom: -2rem;
+  pointer-events: none;
 }
 
 .home-hero-scroll-sticky {
   position: sticky;
   top: calc(3.5rem + env(safe-area-inset-top, 0px) + 2.25rem);
   z-index: 6;
+  pointer-events: none;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -608,6 +610,11 @@ html.portal-reduced-motion .portal-announcement-static {
   will-change: transform, filter;
   margin-inline: auto;
   overflow: visible;
+  pointer-events: auto;
+}
+
+.home-hero-scroll-slider .featured-slider {
+  pointer-events: auto;
 }
 
 .home-hero-scroll-slider .featured-slider {
@@ -705,8 +712,16 @@ html.portal-reduced-motion .home-scroll-hint-wrap {
 
 .home-scroll-reveal-section {
   position: relative;
-  z-index: 8;
-  will-change: transform, opacity;
+  z-index: 20;
+  isolation: isolate;
+  pointer-events: auto;
+}
+
+.game-grid,
+.game-grid-card-reveal {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
 }
 
 .home-scroll-reveal-section:first-of-type {

@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from 'react'
+import { useState, type CSSProperties, type MouseEvent } from 'react'
 import { displayRating } from '../data/portalContent'
 import { useCardPointer } from '../hooks/useCardPointer'
 import { getUserRating } from '../utils/portalStorage'
@@ -14,6 +14,7 @@ type GameCardProps = {
   onToggleFavorite?: (gameId: string) => void
   compact?: boolean
   skipEnterAnimation?: boolean
+  enterDelayMs?: number
 }
 
 const FALLBACK_ART = '/icons.svg'
@@ -27,6 +28,7 @@ export function GameCard({
   onToggleFavorite,
   compact = false,
   skipEnterAnimation = false,
+  enterDelayMs,
 }: GameCardProps) {
   const [imgLoaded, setImgLoaded] = useState(false)
   const [imgSrc, setImgSrc] = useState(game.image)
@@ -35,6 +37,16 @@ export function GameCard({
   const badge = game.isNew ? 'New' : game.popular ? 'Popular' : game.featured ? 'Featured' : null
   const rating = displayRating(game.id, getUserRating(game.id))
 
+  const openDetail = () => onDetail?.(game)
+
+  const stopBubble = (e: MouseEvent) => {
+    e.stopPropagation()
+  }
+
+  const delay =
+    enterDelayMs ??
+    (skipEnterAnimation ? 0 : Math.min(index, 12) * 40)
+
   return (
     <article
       style={
@@ -42,22 +54,28 @@ export function GameCard({
           ['--card-glow' as string]: game.glow,
           ...(skipEnterAnimation
             ? {}
-            : { animationDelay: `${Math.min(index, 12) * 40}ms` }),
+            : { animationDelay: `${delay}ms` }),
         } as CSSProperties
       }
-      className={`${skipEnterAnimation ? '' : 'lobby-card-in'} lobby-card-tilt group card-glow-ring card-spotlight relative flex h-full flex-col rounded-lg ${compact ? 'compact-card' : ''}`}
+      className={`${skipEnterAnimation ? '' : 'lobby-card-in'} lobby-card-tilt group card-glow-ring card-spotlight relative flex h-full flex-col rounded-lg ${onDetail ? 'cursor-pointer' : ''} ${compact ? 'compact-card' : ''}`}
       onPointerMove={onPointerMove}
       onPointerLeave={onPointerLeave}
+      onClick={onDetail ? openDetail : undefined}
+      onKeyDown={
+        onDetail
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                openDetail()
+              }
+            }
+          : undefined
+      }
+      tabIndex={onDetail ? 0 : undefined}
     >
       <div className="lobby-card-panel glass-panel relative flex h-full flex-col overflow-hidden rounded-lg">
         <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden">
           {!imgLoaded && <div className="card-thumb-shimmer absolute inset-0 bg-[#1a1730]" aria-hidden />}
-          <button
-            type="button"
-            className="absolute inset-0 z-[1] cursor-pointer"
-            aria-label={`View ${game.name}`}
-            onClick={() => onDetail?.(game)}
-          />
           <img
             src={imgSrc}
             alt={game.name}
@@ -84,7 +102,7 @@ export function GameCard({
             <button
               type="button"
               onClick={(e) => {
-                e.stopPropagation()
+                stopBubble(e)
                 onToggleFavorite(game.id)
               }}
               className={`absolute bottom-2 right-2 z-[2] flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-[#07070f]/80 text-sm transition-colors ${isFavorite ? 'text-[#e84a9a]' : 'text-zinc-500 hover:text-white'}`}
@@ -95,21 +113,17 @@ export function GameCard({
           )}
         </div>
 
-        <div className={`relative z-[2] flex flex-1 flex-col gap-1.5 p-3 sm:gap-2 ${compact ? 'p-2.5' : 'sm:p-3.5'}`}>
-          <button
-            type="button"
-            onClick={() => onDetail?.(game)}
-            className="truncate text-left font-display text-[11px] font-bold uppercase tracking-wide text-white sm:text-xs"
-          >
+        <div className={`relative z-[1] flex flex-1 flex-col gap-1.5 p-3 sm:gap-2 ${compact ? 'p-2.5' : 'sm:p-3.5'}`}>
+          <p className="truncate text-left font-display text-[11px] font-bold uppercase tracking-wide text-white sm:text-xs">
             {game.name}
-          </button>
+          </p>
           {!compact && (
             <p className="line-clamp-2 text-[10px] leading-snug text-zinc-500 sm:text-[11px]">{game.tagline}</p>
           )}
           <p className="text-[10px] text-zinc-500">
             <span className="text-[#ffc947]">★</span> {rating.toFixed(1)}
           </p>
-          <div className="mt-auto pt-1">
+          <div className="mt-auto pt-1" onClick={stopBubble}>
             <PlayButton glow={game.glow} onClick={() => onPlay(game)} fullWidth compact />
           </div>
         </div>

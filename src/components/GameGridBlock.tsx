@@ -1,5 +1,4 @@
-import { motion, useInView } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import type { Game } from '../types/game'
 import { GameCard } from './GameCard'
 
@@ -17,21 +16,6 @@ type GameGridBlockProps = {
   revealDelay?: number
 }
 
-const cardScaleIn = {
-  hidden: {
-    opacity: 0,
-    scale: 0,
-  },
-  show: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.5,
-      ease: [0.22, 1, 0.36, 1] as const,
-    },
-  },
-}
-
 export function GameGridBlock({
   title,
   subtitle,
@@ -46,31 +30,6 @@ export function GameGridBlock({
   revealDelay = 0,
 }: GameGridBlockProps) {
   const gridRef = useRef<HTMLDivElement>(null)
-  const [motionReady, setMotionReady] = useState(revealDisabled)
-
-  const inView = useInView(gridRef, {
-    once: true,
-    amount: 0.08,
-    margin: '0px 0px -20px 0px',
-  })
-
-  useEffect(() => {
-    if (revealDisabled) return
-    const t = window.setTimeout(() => setMotionReady(true), 80)
-    return () => window.clearTimeout(t)
-  }, [revealDisabled])
-
-  const playStagger = !revealDisabled && motionReady && inView
-
-  const staggerWithDelay = {
-    hidden: {},
-    show: {
-      transition: {
-        staggerChildren: 0.11,
-        delayChildren: revealDelay + 0.06,
-      },
-    },
-  }
 
   return (
     <section className="mb-8 sm:mb-9" aria-label={title}>
@@ -89,8 +48,8 @@ export function GameGridBlock({
         <p className="glass-panel rounded-xl border border-dashed border-white/10 py-10 text-center text-xs text-zinc-500">
           {emptyMessage ?? 'Nothing here yet.'}
         </p>
-      ) : revealDisabled ? (
-        <div className="game-grid items-stretch">
+      ) : (
+        <div ref={gridRef} className="game-grid items-stretch">
           {games.map((game, index) => (
             <GameCard
               key={game.id}
@@ -101,38 +60,11 @@ export function GameGridBlock({
               isFavorite={favorites.has(game.id)}
               onToggleFavorite={onToggleFavorite}
               compact={compact}
-              skipEnterAnimation
+              skipEnterAnimation={revealDisabled}
+              enterDelayMs={revealDisabled ? 0 : revealDelay * 1000 + Math.min(index, 12) * 55}
             />
           ))}
         </div>
-      ) : (
-        <motion.div
-          ref={gridRef}
-          className="game-grid items-stretch"
-          variants={staggerWithDelay}
-          initial="hidden"
-          animate={playStagger ? 'show' : 'hidden'}
-        >
-          {games.map((game, index) => (
-            <motion.div
-              key={game.id}
-              variants={cardScaleIn}
-              className="game-grid-card-reveal h-full min-h-0"
-              style={{ transformOrigin: 'center center' }}
-            >
-              <GameCard
-                game={game}
-                index={index}
-                onPlay={onPlay}
-                onDetail={onDetail}
-                isFavorite={favorites.has(game.id)}
-                onToggleFavorite={onToggleFavorite}
-                compact={compact}
-                skipEnterAnimation
-              />
-            </motion.div>
-          ))}
-        </motion.div>
       )}
     </section>
   )

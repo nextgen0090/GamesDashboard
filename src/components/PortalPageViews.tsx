@@ -11,7 +11,7 @@ import {
 import type { Game } from '../types/game'
 import type { PortalPage } from '../portal/pages'
 import type { PortalSettings } from '../utils/portalStorage'
-import { HomeScrollLayout } from './HomeScrollLayout'
+import { GameMosaic } from './GameMosaic'
 import { LeaderboardSection } from './LeaderboardSection'
 import {
   FAQSection,
@@ -82,15 +82,7 @@ export function PortalPageViews(props: PortalViewProps) {
     <>
       <AnimatePresence mode="wait">
         <motion.div key={page} {...pageMotion} className="portal-page">
-          {page === 'home' && (
-            <HomeScrollLayout
-              reducedMotion={revealOff}
-              onPlay={onPlay}
-              onDetail={onDetail}
-              favorites={favorites}
-              onToggleFavorite={onToggleFavorite}
-            />
-          )}
+          {page === 'home' && <GameMosaic onPlay={onPlay} />}
 
           {page === 'games' && (
             <>
@@ -281,10 +273,12 @@ export function PortalPageViews(props: PortalViewProps) {
         </motion.div>
       </AnimatePresence>
 
-      <ScrollReveal disabled={revealOff} className="portal-global-bottom mt-10 border-t border-white/[0.06] pt-8">
-        <FAQSection />
-        <PortalFooter onNavigate={onNavigate} onScrollToFaq={scrollToFaq} />
-      </ScrollReveal>
+      {page !== 'home' && (
+        <ScrollReveal disabled={revealOff} className="portal-global-bottom mt-10 border-t border-white/[0.06] pt-8">
+          <FAQSection />
+          <PortalFooter onNavigate={onNavigate} onScrollToFaq={scrollToFaq} />
+        </ScrollReveal>
+      )}
     </>
   )
 }

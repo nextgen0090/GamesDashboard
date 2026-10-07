@@ -1,7 +1,7 @@
 import { AnimatePresence } from 'framer-motion'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { games } from '../data/games'
-import { PAGE_TITLES, type PortalPage } from '../portal/pages'
+import type { PortalPage } from '../portal/pages'
 import type { Game } from '../types/game'
 import {
   addRecentlyPlayed,
@@ -12,8 +12,6 @@ import {
   toggleFavorite,
   type PortalSettings,
 } from '../utils/portalStorage'
-import { AmbientBackground } from './AmbientBackground'
-import { DashboardNav } from './DashboardNav'
 import { GamePlayerModal } from './GamePlayerModal'
 import { LeaderboardFullModal } from './LeaderboardSection'
 import {
@@ -22,22 +20,18 @@ import {
   HelpTopicModal,
   type ArticlePayload,
 } from './PortalOverlays'
-import { PortalCursor } from './PortalCursor'
 import { PortalPageLoader } from './PortalPageLoader'
 import { PortalPageViews } from './PortalPageViews'
-import { PortalSideMenu } from './PortalSideMenu'
-import { PORTAL_CONTENT, PORTAL_SHELL } from '../portal/layout'
 
 export function GameDashboard() {
   const [page, setPage] = useState<PortalPage>('home')
   const [contentPage, setContentPage] = useState<PortalPage>('home')
   const [pageLoading, setPageLoading] = useState(false)
   const pageLoadTimer = useRef(0)
-  const [menuOpen, setMenuOpen] = useState(false)
   const [activeGame, setActiveGame] = useState<Game | null>(null)
   const [detailGame, setDetailGame] = useState<Game | null>(null)
   const [category, setCategory] = useState<string>('All')
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery] = useState('')
   const [favorites, setFavorites] = useState<string[]>(() => getFavorites())
   const [recent, setRecent] = useState(() => getRecentlyPlayed())
   const [settings, setSettings] = useState<PortalSettings>(() => getSettings())
@@ -45,9 +39,6 @@ export function GameDashboard() {
   const [helpTopic, setHelpTopic] = useState<string | null>(null)
   const [leaderboardFull, setLeaderboardFull] = useState(false)
   const [, setRatingTick] = useState(0)
-  const [finePointer, setFinePointer] = useState(false)
-  const cursorGlowRef = useRef<HTMLDivElement>(null)
-  const pointerRaf = useRef(0)
   const mainRef = useRef<HTMLElement>(null)
 
   const favoriteSet = useMemo(() => new Set(favorites), [favorites])
@@ -146,59 +137,12 @@ export function GameDashboard() {
   }, [settings])
 
   useEffect(() => {
-    const mq = window.matchMedia('(pointer: fine)')
-    const update = () => setFinePointer(mq.matches)
-    update()
-    mq.addEventListener('change', update)
-    return () => mq.removeEventListener('change', update)
-  }, [])
-
-  useEffect(() => {
-    const root = document.documentElement
-    root.style.setProperty('--lobby-px', '0')
-    root.style.setProperty('--lobby-py', '0')
-
-    let mx = 0
-    let my = 0
-    let cx = 0
-    let cy = 0
-    let scheduled = false
-
-    const flush = () => {
-      scheduled = false
-      root.style.setProperty('--lobby-px', mx.toFixed(4))
-      root.style.setProperty('--lobby-py', my.toFixed(4))
-      const glow = cursorGlowRef.current
-      if (glow) {
-        glow.style.transform = `translate3d(${cx}px, ${cy}px, 0) translate(-50%, -50%)`
-      }
-    }
-
-    const onMove = (e: MouseEvent) => {
-      cx = e.clientX
-      cy = e.clientY
-      mx = (e.clientX / window.innerWidth - 0.5) * 2
-      my = (e.clientY / window.innerHeight - 0.5) * 2
-      if (!scheduled) {
-        scheduled = true
-        pointerRaf.current = requestAnimationFrame(flush)
-      }
-    }
-
-    window.addEventListener('mousemove', onMove, { passive: true })
-    return () => {
-      window.removeEventListener('mousemove', onMove)
-      cancelAnimationFrame(pointerRaf.current)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (menuOpen || activeGame) document.body.style.overflow = 'hidden'
+    if (activeGame) document.body.style.overflow = 'hidden'
     else document.body.style.overflow = ''
     return () => {
       document.body.style.overflow = ''
     }
-  }, [menuOpen, activeGame])
+  }, [activeGame])
 
   const recentGames = useMemo(() => {
     return recent
@@ -206,45 +150,21 @@ export function GameDashboard() {
       .filter((g): g is Game => g != null)
   }, [recent])
 
-  const showCursorGlow = finePointer && !activeGame && !menuOpen && settings.backgroundEffects
-  const showPremiumCursor =
-    finePointer && !activeGame && !menuOpen && !settings.reducedAnimations
-  const showBackground = settings.backgroundEffects
-
   return (
     <>
-      <PortalCursor active={showPremiumCursor} />
-      {showBackground && <AmbientBackground />}
-      <div
-        ref={cursorGlowRef}
-        className={`cursor-glow pointer-events-none fixed z-[1] ${showCursorGlow ? 'md:block' : 'hidden'}`}
-        aria-hidden
-      />
+      <div className="mosaic-backdrop" aria-hidden>
+        <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+          <rect width="1440" height="900" fill="#c3f4ea" />
+          <polygon points="980,430 1440,300 1440,900 860,900" fill="#b4eee3" />
+          <polygon points="1120,560 1440,470 1440,900 1040,900" fill="#d7faf4" />
+          <polygon points="0,640 260,560 220,900 0,900" fill="#b7efe4" />
+          <polygon points="0,760 160,900 0,900" fill="#dffaf6" />
+          <polygon points="1280,0 1440,0 1440,180" fill="#d9faf5" />
+        </svg>
+      </div>
 
-      <PortalSideMenu
-        open={menuOpen}
-        activePage={page}
-        onClose={() => setMenuOpen(false)}
-        onNavigate={navigate}
-      />
-
-      <DashboardNav
-        shellClass={PORTAL_SHELL}
-        pageTitle={PAGE_TITLES[page]}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onSearchPick={(g) => {
-          setDetailGame(g)
-          navigate('games')
-        }}
-        onMenuOpen={() => setMenuOpen(true)}
-      />
-
-      <main
-        ref={mainRef}
-        className={`portal-main relative z-10 ${PORTAL_SHELL} pb-10 pt-1 sm:pt-1.5`}
-      >
-        <div className={`${PORTAL_CONTENT} relative min-h-[50vh]`}>
+      <main ref={mainRef} className="mosaic-main">
+        <div className="relative min-h-[50vh]">
           <AnimatePresence>{pageLoading ? <PortalPageLoader key="portal-page-load" page={page} /> : null}</AnimatePresence>
           <div
             className={`transition-opacity duration-300 ease-out ${pageLoading ? 'pointer-events-none opacity-0' : 'opacity-100'}`}

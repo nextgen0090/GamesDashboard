@@ -43,10 +43,17 @@ export function GameDashboard() {
 
   const favoriteSet = useMemo(() => new Set(favorites), [favorites])
 
-  const handlePlay = useCallback((game: Game) => {
+  const recordPlay = useCallback((game: Game) => {
     setRecent(addRecentlyPlayed(game))
-    setActiveGame(game)
   }, [])
+
+  const handlePlay = useCallback(
+    (game: Game) => {
+      recordPlay(game)
+      setActiveGame(game)
+    },
+    [recordPlay],
+  )
 
   const handleToggleFavorite = useCallback((id: string) => {
     setFavorites(toggleFavorite(id))
@@ -173,6 +180,7 @@ export function GameDashboard() {
             <PortalPageViews
           page={contentPage}
           onPlay={handlePlay}
+          onHomePlay={recordPlay}
           onDetail={setDetailGame}
           favorites={favoriteSet}
           onToggleFavorite={handleToggleFavorite}

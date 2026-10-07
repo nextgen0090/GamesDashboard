@@ -28,6 +28,7 @@ import { ScrollReveal } from './ScrollReveal'
 export type PortalViewProps = {
   page: PortalPage
   onPlay: (game: Game) => void
+  onHomePlay: (game: Game) => void
   onDetail: (game: Game) => void
   favorites: Set<string>
   onToggleFavorite: (id: string) => void
@@ -55,6 +56,7 @@ export function PortalPageViews(props: PortalViewProps) {
   const {
     page,
     onPlay,
+    onHomePlay,
     onDetail,
     favorites,
     onToggleFavorite,
@@ -82,7 +84,7 @@ export function PortalPageViews(props: PortalViewProps) {
     <>
       <AnimatePresence mode="wait">
         <motion.div key={page} {...pageMotion} className="portal-page">
-          {page === 'home' && <GameMosaic onPlay={onPlay} />}
+          {page === 'home' && <GameMosaic onPlayed={onHomePlay} reducedMotion={revealOff} />}
 
           {page === 'games' && (
             <>
